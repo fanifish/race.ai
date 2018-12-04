@@ -8,7 +8,7 @@ from dql import DQN
 opts = dict(
     num_episodes=10,   # number of games the agent will play
     num_iter=1000,
-    is_training=False,
+    is_training=True,
     input_img_dim=(96, 96, 3),
     temporal_window=1,
     render=True,
@@ -21,15 +21,10 @@ env = gym.make("CarRacing-v0")   # what ever the game is the idea is to make the
 observation = env.reset()
 episode_count=0
 
+# DQN model reproduced from google deep mind
 dqn = DQN(opts)
-print(opts)
-print(observation.shape)
-action = dqn.policy([])
-observation, reward, done, info = env.step(action)
-print(observation.shape)
-print(reward)
-print(done)
-print(info)
+
+
 while episode_count < opts['num_episodes'] and opts['is_training']:
 
     for _ in range(opts['num_iter']):
@@ -40,7 +35,7 @@ while episode_count < opts['num_episodes'] and opts['is_training']:
         # TODO add the learning module
         #action = env.action_space.sample()   # currently our agent gets random action 
         #
-        action = dqn.policy([])
+        action = dqn.forward([])
         
         observation, reward, done, info = env.step(action)
         # print(observation, reward)

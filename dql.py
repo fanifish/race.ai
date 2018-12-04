@@ -6,6 +6,7 @@
 import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense
+import random
 
 
 class DQN:
@@ -19,6 +20,9 @@ class DQN:
         self.num_actions = 3 #TODO get num of actions from options
         self.num_input = (self.state_size*self.temporal_window) + (self.num_actions*self.temporal_window) + self.state_size 
         self.learn_freq = opts['learn_freq']
+        self.forward_pass = 0
+        self.epsilon = 1
+        self.accelerate_prob=0.8 # the car needs to explore going forward more often
         self.network = self.create_network(opts['net_opts'])
         print('Done init')
 
@@ -36,5 +40,31 @@ class DQN:
         print(action)
         return action
 
-    def forward(self, input_img):
-        print('training')
+    def random_action(self):
+        action = [0, 1, 0]
+        p_rand=0
+        p_rand = random.randint(0, 1)
+        if p_rand > self.accelerate_prob: 
+            action = np.random.randn(self.num_actions)
+        return action
+    def forward(self, input_array):
+        self.forward_pass += 1
+
+        action = [0, 0, 0]
+
+        if self.forward_pass > self.temporal_window:
+
+            net_input = input_array
+
+            esp_rand=0
+
+            eps_rand = random.randint(0, 1)
+
+            if esp_rand < self.epsilon:
+                action = self.random_action()
+            else:
+                action = self.policy(net_input)
+        else:
+            action = self.random_action()
+        print(action)
+        return action
